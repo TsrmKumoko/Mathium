@@ -25,7 +25,7 @@ Special methods:
 | :---: | :---: | :---: | :---: | :---: |
 | `Re(self)`<br>`Im(self)`<br>`conj(self)`<br>`norm(self)` | `I(int)`<br>`det(Matrix)`<br>`adjoint(Matrix)`<br>`inv(Matrix)` | `LineToCoor(self, idx)`<br>`PolyConv(ten0, ten1, map0, map1)`<br>`PolyPlus(ten0, ten1, map0, map1)` | `reduce(self)` | |
 
-## Usage
+## Examples
 
 ### Complex
 
