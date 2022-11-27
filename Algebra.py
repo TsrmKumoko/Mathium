@@ -110,7 +110,7 @@ class Tensor(object):
                 idx = coor[0]
                 for k in range(1, degrees):
                     idx = idx * deg[k] + coor[k]
-                elem[idx] = ten0.__elem[i] * ten1.__elem[j]
+                elem[idx] += ten0.__elem[i] * ten1.__elem[j]
         
         out = Tensor()
         out.__elem = elem
