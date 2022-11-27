@@ -54,7 +54,10 @@ class Tensor(object):
     def __getitem__(self, key):
         length = int(self.__volume / self.__deg[0])
         elem = self.__elem[key * length : (key + 1) * length]
-        out = Tensor(elem, self.__deg[1:])
+        out = Tensor()
+        out.__elem = elem
+        out.__deg = self.__deg[1:]
+        out.__volume = len(elem)
         if out.__volume == 1:
             return out.__elem[0]
         else:
