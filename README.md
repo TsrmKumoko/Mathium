@@ -37,6 +37,7 @@ display(c * Complex(1, -2))
 ```
 
 You can get a LaTeX object. Please view it by Jupyter. That is:
+
 $$
 3-\mathrm{i}
 $$
