@@ -115,4 +115,11 @@ $$
 -x^{2}y^{2}+2x^{2}y-x^{2}+4xy^{2}-2xyz^{2}-4xy+2xz^{2}-4y^{2}+4yz^{2}+6z^{2}+9
 $$
 
-There are a number of features undone which will be finished little by little.
+## Future Version
+
+There are a number of features undone which will be finished little by little. Updates will include:
+
+* Factorization in `Polynomial` class
+* Reduction in `Fraction` class
+* Improved `Matrix` and `Tensor` class
+* Redesigned structure
