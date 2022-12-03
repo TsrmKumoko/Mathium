@@ -560,17 +560,25 @@ class Tensor(object):
             else:
                 self.__elem.append(toMathium(top))
 
-    def __getitem__(self, key):
-        length = int(self.__volume / self.__deg[0])
-        elem = self.__elem[key * length : (key + 1) * length]
-        out = Tensor()
-        out.__elem = elem
-        out.__deg = self.__deg[1:]
-        out.__volume = len(elem)
-        if out.__volume == 1:
-            return out.__elem[0]
-        else:
-            return out
+    def __getitem__(self, key: Union[int, tuple, list]):
+        if isinstance(key, int):
+            length = int(self.__volume / self.__deg[0])
+            elem = self.__elem[key * length : (key + 1) * length]
+            out = Tensor()
+            out.__elem = elem
+            out.__deg = self.__deg[1:]
+            out.__volume = len(elem)
+            if out.__volume == 1:
+                return out.__elem[0]
+            else:
+                return out
+        elif isinstance(key, (tuple, list)):
+            if len(key) == 0:
+                return self
+            elif len(key) == 1:
+                return self[key[0]]
+            else:
+                return self[key[0]][key[1:]]
         
     def __pos__(self):
         return self
@@ -605,7 +613,7 @@ class Tensor(object):
                 deg[map1[i]] = ten1.__deg[i]
             else:
                 deg[map1[i]] += ten1.__deg[i] - 1
-        
+
         volume = 1
         for item in deg:
             volume *= item
@@ -628,6 +636,17 @@ class Tensor(object):
         out.__elem = elem
         out.__deg = deg
         out.__volume = volume
+        return out
+
+    @staticmethod
+    def zeros(degree):
+        out = Tensor()
+        out.__deg = degree
+        depth = len(degree) - 1
+        out.__volume = 1
+        for item in out.__deg:
+            out.__volume *= item
+        out.__elem = [Real(0) for _ in range(out.__volume)]
         return out
 
     @staticmethod
