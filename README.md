@@ -4,28 +4,39 @@ Mathium is a python library which supports complex numbers, fractions, matrices,
 
 ## Intro
 
-There are 5 main classes in Mathium: Complex, Matrix, Tensor, Fraction, Polynomial. They can be freely mixed up when you calculate a certain expression.
+There are 6 main classes in Mathium: Real, Complex, Matrix, Tensor, Fraction, Polynomial. They can be freely mixed up when you calculate a certain expression.
 
 Use the method `display` to view the output, which will be rendered by $\LaTeX$. Use the method `LaTeX` to get the LaTeX code of the output expression.
 
 Basic methods:
 
-| Operator | Complex | Matrix | Tensor | Fraction | Polynomial |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| `a + b` | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `a - b` | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `a * b` | ✅ | ✅ | ❌ | ✅ | ✅ |
-| ` a / b` | ✅ | ❌ | ❌ | ❌ | ✅ |
-| `a ** b` | ❌ | ✅ | ❌ | ❌ | ❌ |
-| `a[n]` | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Operator | Real | Complex | Matrix | Tensor | Fraction | Polynomial |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `a + b` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `a - b` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `a * b` | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
+| ` a / b` | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ |
+| `a ** b` | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| `a[n]` | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 
 Special methods:
 
-| Complex | Matrix | Tensor | Fraction | Polynomial |
-| :---: | :---: | :---: | :---: | :---: |
-| `Re(self)`<br>`Im(self)`<br>`conj(self)`<br>`norm(self)` | `I(int)`<br>`det(Matrix)`<br>`adjoint(Matrix)`<br>`inv(Matrix)` | `LineToCoor(self, idx)`<br>`PolyConv(ten0, ten1, map0, map1)`<br>`PolyPlus(ten0, ten1, map0, map1)` | `reduce(self)` | |
+| Real | Complex | Matrix | Tensor | Fraction | Polynomial |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| `factors(self)` | `Re(self)`<br>`Im(self)`<br>`conj(self)`<br>`norm(self)` | `I(int)`<br>`det(Matrix)`<br>`adjoint(Matrix)`<br>`inv(Matrix)` | `LineToCoor(self, idx)`<br>`PolyConv(ten0, ten1, map0, map1)`<br>`PolyPlus(ten0, ten1, map0, map1)` | `reduce(self)` | |
 
 ## Examples
+
+### Real
+
+The `Real` class is used to unify the calculation, so it's not so meaningful to directly use it. 
+
+You can factorize a integer by using `Real.factors()`:
+
+```python
+>>> Real(36).factors()
+[2, 2, 3, 3]
+```
 
 ### Complex
 
@@ -36,7 +47,7 @@ c = Complex(1, 1)
 display(c * Complex(1, -2))
 ```
 
-You can get a LaTeX object. Please view it by Jupyter. That is:
+You can get a LaTeX object which should be viewed with Jupyter. That is:
 
 $$
 3-\mathrm{i}
@@ -79,20 +90,21 @@ t = Tensor([
 ])
 t[0][1]
 ```
-Output:
-```python
+$$
 1
-```
+$$
 
 ### Fraction
 
+Now float can be casted to fraction. Reduction is available and will be automatically done. Use `auto_reduce = False` to turn it off.
+
 ```python
-r1 = Fraction(1, 2)
-r2 = Fraction(2, 3)
-display(r1 + r2)
+r1 = Fraction(0.128)
+r2 = Fraction(25, 7)
+display(r1 * r2)
 ```
 $$
-\frac{7}{6}
+\frac{16}{35}
 $$
 
 ### Polynomial
@@ -102,18 +114,21 @@ t = Polynomial([1, 1], 'w') / Polynomial([-1, 1], 'w')
 display(t*t - t + 2)
 
 f1 = Polynomial([
-    [3, 2],
-    [1, -1]
+    [1, 1],
+    [1, 1]
 ], ['x', 'y'])
-f2 = Polynomial([3, 0, 1], ['z'])
-display(f1 * (2 * f2 - f1))
+f2 = Polynomial(
+    [1, -1, 1],
+    ['x']
+)
+display(f1 * f2)
 ```
 $$
 \frac{2w^{3}-4w^{2}+6w-4}{w^{3}-3w^{2}+3w-1}
 $$
 
 $$
--x^{2}y^{2}+2x^{2}y-x^{2}+4xy^{2}-2xyz^{2}-4xy+2xz^{2}-4y^{2}+4yz^{2}+6z^{2}+9
+x^{3}y+x^{3}+y+1
 $$
 
 ## Future Version
@@ -121,6 +136,5 @@ $$
 There are a number of features undone which will be finished little by little. Updates will include:
 
 * Factorization in `Polynomial` class
-* Reduction in `Fraction` class
 * Improved `Matrix` and `Tensor` class
-* Redesigned structure
+* Derivative
