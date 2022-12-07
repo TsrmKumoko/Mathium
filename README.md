@@ -6,9 +6,11 @@ Mathium is a python library which supports complex numbers, fractions, matrices,
 
 There are 6 main classes in Mathium: Real, Complex, Matrix, Tensor, Fraction, Polynomial. They can be freely mixed up when you calculate a certain expression.
 
+Basic operations like plus and times, derivation, determinant, etc. are supported.
+
 Use the method `display` to view the output, which will be rendered by $\LaTeX$. Use the method `LaTeX` to get the LaTeX code of the output expression.
 
-Basic methods:
+### Main Methods in Classes
 
 | Operator | Real | Complex | Matrix | Tensor | Fraction | Polynomial |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -19,11 +21,16 @@ Basic methods:
 | `a ** b` | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
 | `a[n]` | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 
-Special methods:
+| MathiumObject | Real | Complex | Matrix | Tensor | Fraction | Polynomial |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `sign(self)`<br>`LaTeX(self)` | `factors(self)` | `Re(self)`<br>`Im(self)`<br>`conj(self)`<br>`norm(self)` | `I(int)`<br>`det(Matrix)`<br>`adjoint(Matrix)`<br>`inv(Matrix)` | `LineToCoor(self, idx)`<br>`PolyConv(ten0, ten1, map0, map1)`<br>`PolyPlus(ten0, ten1, map0, map1)` | `reduce(self)` | |
 
-| Real | Complex | Matrix | Tensor | Fraction | Polynomial |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| `factors(self)` | `Re(self)`<br>`Im(self)`<br>`conj(self)`<br>`norm(self)` | `I(int)`<br>`det(Matrix)`<br>`adjoint(Matrix)`<br>`inv(Matrix)` | `LineToCoor(self, idx)`<br>`PolyConv(ten0, ten1, map0, map1)`<br>`PolyPlus(ten0, ten1, map0, map1)` | `reduce(self)` | |
+### Global Methods
+
+| Method | Info |
+| :---: | :--- |
+| `display(obj)` | Display an expression (`MathiumObject`) using $\LaTeX$. |
+| `D(obj, var)` | Calculate the derivative of `obj`. |
 
 ## Examples
 
@@ -88,7 +95,7 @@ t = Tensor([
     [0, 1],
     [2, 3]
 ])
-display(t[0][1])
+t[0][1]
 ```
 $$
 1
@@ -111,7 +118,7 @@ $$
 
 ```python
 t = Polynomial([1, 1], 'w') / Polynomial([-1, 1], 'w')
-display(t*t - t + 2)
+display(D(t * t, 'w'))
 
 f1 = Polynomial([
     [1, 1],
@@ -124,7 +131,7 @@ f2 = Polynomial(
 display(f1 * f2)
 ```
 $$
-\frac{2w^{3}-4w^{2}+6w-4}{w^{3}-3w^{2}+3w-1}
+-\frac{4w^{2}-4}{w^{4}-4w^{3}+6w^{2}-4w+1}
 $$
 
 $$
@@ -137,4 +144,5 @@ There are a number of features undone which will be finished little by little. U
 
 * Factorization in `Polynomial` class
 * Improved `Matrix` and `Tensor` class
-* Derivative
+* Log / calculate step by step
+* Comments
