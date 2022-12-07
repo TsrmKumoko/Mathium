@@ -560,6 +560,18 @@ class Tensor(object):
             else:
                 self.__elem.append(toMathium(top))
 
+    def __eq__(self, other) -> bool:
+        if other == 0:
+            for item in self.__elem:
+                if item != 0:
+                    return False
+            return True
+        elif isinstance(other, Tensor):
+            if self.__elem == other.__elem:
+                return True
+            else:
+                return False
+
     def __getitem__(self, key: Union[int, tuple, list]):
         if isinstance(key, int):
             length = int(self.__volume / self.__deg[0])
@@ -591,6 +603,21 @@ class Tensor(object):
         for i in range(self.__volume):
             out.__elem.append(-self.__elem[i])
         return out
+
+    def __len__(self) -> int:
+        self.__volume = 1
+        for item in self.__deg:
+            self.__volume *= item
+        return self.__volume
+
+    def volume(self) -> int:
+        self.__volume = 1
+        for item in self.__deg:
+            self.__volume *= item
+        return self.__volume
+
+    def degree(self) -> list[int]:
+        return copy(self.__deg)
         
     def LineToCoor(self, idx) -> list[int]:
         den = self.__volume
@@ -600,6 +627,14 @@ class Tensor(object):
             out.append(idx // den)
             idx %= den
         out.append(idx)
+        return out
+
+    @staticmethod
+    def zeros(degree):
+        out = Tensor()
+        out.__deg = degree
+        depth = len(degree) - 1
+        out.__elem = [Real(0) for _ in range(len(out))]
         return out
 
     @staticmethod
@@ -617,9 +652,9 @@ class Tensor(object):
         volume = 1
         for item in deg:
             volume *= item
-        elem = [0 for _ in range(volume)]
-        for i in range(ten0.__volume):
-            for j in range(ten1.__volume):
+        elem = [Real(0) for _ in range(volume)]
+        for i in range(len(ten0)):
+            for j in range(len(ten1)):
                 coor = [0 for _ in range(degrees)]
                 coor0 = ten0.LineToCoor(i)
                 coor1 = ten1.LineToCoor(j)
@@ -639,17 +674,6 @@ class Tensor(object):
         return out
 
     @staticmethod
-    def zeros(degree):
-        out = Tensor()
-        out.__deg = degree
-        depth = len(degree) - 1
-        out.__volume = 1
-        for item in out.__deg:
-            out.__volume *= item
-        out.__elem = [Real(0) for _ in range(out.__volume)]
-        return out
-
-    @staticmethod
     def PolyPlus(ten0, ten1, map0, map1):
         degrees = max(max(map0), max(map1)) + 1
         deg = [0 for _ in range(degrees)]
@@ -664,7 +688,7 @@ class Tensor(object):
         volume = 1
         for item in deg:
             volume *= item
-        elem = [0 for _ in range(volume)]
+        elem = [Real(0) for _ in range(volume)]
         
         for i in range(ten0.__volume):
             coor = [0 for _ in range(degrees)]
@@ -732,6 +756,9 @@ class Polynomial(MathiumObject):
             self.__Coefficients = Coefficients
         else:
             raise TypeError()
+        if self.__Coefficients == 0:
+            degree = [1 for _ in range(len(Variables))]
+            self.__Coefficients = Tensor.zeros(degree)
     
     def __neg__(self):
         return Polynomial(-self.__Coefficients, self.__Variable)
@@ -811,6 +838,39 @@ class Polynomial(MathiumObject):
         else:
             raise TypeError()
 
+    def coefficients(self) -> Tensor:
+        return self.__Coefficients
+
+    def variables(self) -> list[Variable]:
+        return copy(self.__Variable)
+
+    def isConst(self) -> bool:
+        for item in self.__Coefficients._Tensor__elem[1:]:
+            if item != 0:
+                return False
+        return True
+
+    def sign(self) -> bool:
+        if self.isConst() or ascending:
+            for item in self.__Coefficients._Tensor__elem:
+                if item == 0:
+                    continue
+                else:
+                    return item.sign()
+        if not ascending:
+            for item in self.__Coefficients._Tensor__elem[::-1]:
+                if item == 0:
+                    continue
+                else:
+                    return item.sign()
+        return True
+
+    def __abs__(self):
+        if self.sign():
+            return self
+        else:
+            return -self
+
     def LaTeX(self):
         out = ''
         coef = self.__Coefficients
@@ -860,6 +920,8 @@ class Polynomial(MathiumObject):
                     if powers[k] == 1:
                         continue
                     out += '^{' + str(powers[k]) + '}'
+        if out == '':
+            out = '0'
         if out[0] == '+':
             out = out[1:]
         return out
@@ -889,11 +951,11 @@ def display(obj: MathiumObject):
 i = Complex(0, 1)
 j = Complex(0, 1)
 
-def derivative(obj: MathiumObject, var: Union[str, Variable]):
+def derivative(obj: MathiumObject, var: Union[str, Variable] = 'x'):
     obj = toMathium(obj)
     var = toVariable(var)
     if isinstance(obj, Real):
-        return 0
+        return Real(0)
     elif isinstance(obj, Complex):
         Re = derivative(obj.Re(), var)
         Im = derivative(obj.Im(), var)
@@ -905,7 +967,24 @@ def derivative(obj: MathiumObject, var: Union[str, Variable]):
         den = den * den
         return Fraction(num, den)
     elif isinstance(obj, Polynomial):
-        NotImplemented
+        if var not in obj.variables():
+            return Real(0)
+        else:
+            degree = obj.coefficients().degree()
+            variables = obj.variables()
+            varIndex = variables.index(var)
+            if degree[varIndex] == 1:
+                return Real(0)
+            if degree[varIndex] > 1:
+                degree[varIndex] -= 1
+            coef = Tensor.zeros(degree)
+            for i in range(len(coef)):
+                indices = coef.LineToCoor(i)
+                indices[varIndex] += 1
+                coef._Tensor__elem[i] = obj.coefficients()[indices] * indices[varIndex]
+            return Polynomial(coef, variables)
     else:
         NotImplemented
+        
+D = derivative
 
